@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fábrica de Chocolate - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Sans+MS&family=Bubblegum+Sans&family=Caveat:wght@700&display=swap" rel="stylesheet">
+</head>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+  transition: all 0.3s ease;
+}
+
+:root {
+  --chocolate: #5a3921;
+  --caramelo: #ff9843;
+  --purpura-wonka: #800080;
+  --verde-oompa: #7fba00;
+  --azul-rio: #1e90ff;
+  --rosa-chicle: #ff69b4;
+  --crema: #f8e8d4;
+  --dorado: #ffd700;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes colorChange {
+  0% { background-color: var(--caramelo); }
+  25% { background-color: var(--rosa-chicle); }
+  50% { background-color: var(--azul-rio); }
+  75% { background-color: var(--verde-oompa); }
+  100% { background-color: var(--caramelo); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+body {
+  background: linear-gradient(135deg, var(--purpura-wonka), var(--chocolate), var(--caramelo));
+  color: var(--crema);
+  font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  overflow: hidden;
+  position: relative;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ff9843"/><circle cx="8" cy="9" r="2" fill="black"/><circle cx="16" cy="9" r="2" fill="black"/><path d="M7,15 Q12,18 17,15" stroke="black" stroke-width="2" fill="none"/></svg>'), auto;
+}
+
+.container {
+  text-align: center;
+  width: 350px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  transition: transform 0.3s;
+  border: 5px solid var(--caramelo);
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  height: 15px;
+  background: linear-gradient(90deg, var(--caramelo), var(--rosa-chicle), var(--verde-oompa));
+  border-radius: 10px 10px 0 0;
+  z-index: -1;
+}
+
+.container:hover {
+  transform: scale(1.05) translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+  font-family: 'Caveat', cursive;
+  font-size: 36px;
+  color: var(--dorado);
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  position: relative;
+  display: inline-block;
+}
+
+h2::before, h2::after {
+  content: "🍭";
+  position: absolute;
+  font-size: 24px;
+  top: 0;
+  animation: float 4s ease-in-out infinite;
+}
+
+h2::before {
+  left: -30px;
+}
+
+h2::after {
+  right: -30px;
+  animation-delay: 1s;
+}
+
+input {
+  width: 90%;
+  padding: 12px 15px;
+  margin: 15px 0;
+  border: 3px solid var(--chocolate);
+  border-radius: 30px;
+  outline: none;
+  font-size: 16px;
+  background: var(--crema);
+  color: var(--chocolate);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s;
+}
+
+input:focus {
+  border-color: var(--purpura-wonka);
+  box-shadow: 0 0 15px rgba(128,0,128,0.3);
+  transform: translateY(-3px);
+}
+
+input::placeholder {
+  color: var(--chocolate);
+  opacity: 0.7;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(45deg, var(--caramelo), var(--dorado));
+  border: 3px solid var(--chocolate);
+  color: var(--chocolate);
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border-radius: 30px;
+  margin-top: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: 0.5s;
+  z-index: 1;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  background: linear-gradient(45deg, var(--verde-oompa), var(--rosa-chicle));
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+  color: white;
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+a {
+  color: var(--dorado);
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -3px;
+  left: 0;
+  background: linear-gradient(90deg, var(--caramelo), var(--rosa-chicle), var(--azul-rio));
+  transition: width 0.3s;
+}
+
+a:hover {
+  color: var(--rosa-chicle);
+  text-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+p {
+  margin-top: 15px;
+  color: var(--crema);
+}
+
+.bubbles {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: rise 10s infinite ease-in;
+}
+
+.bubble:nth-child(1) {
+  width: 40px;
+  height: 40px;
+  left: 10%;
+  animation-duration: 8s;
+}
+
+.bubble:nth-child(2) {
+  width: 20px;
+  height: 20px;
+  left: 20%;
+  animation-duration: 5s;
+  animation-delay: 1s;
+}
+
+.bubble:nth-child(3) {
+  width: 50px;
+  height: 50px;
+  left: 35%;
+  animation-duration: 7s;
+  animation-delay: 2s;
+}
+
+.bubble:nth-child(4) {
+  width: 30px;
+  height: 30px;
+  left: 50%;
+  animation-duration: 6s;
+  animation-delay: 0s;
+}
+
+.bubble:nth-child(5) {
+  width: 35px;
+  height: 35px;
+  left: 65%;
+  animation-duration: 9s;
+  animation-delay: 1.5s;
+}
+
+.bubble:nth-child(6) {
+  width: 25px;
+  height: 25px;
+  left: 80%;
+  animation-duration: 5.5s;
+  animation-delay: 3s;
+}
+
+.bubble:nth-child(7) {
+  width: 45px;
+  height: 45px;
+  left: 90%;
+  animation-duration: 7.5s;
+  animation-delay: 2s;
+}
+
+@keyframes rise {
+  0% {
+    bottom: -100px;
+    transform: translateX(0);
+    background: rgba(255, 152, 67, 0.3);
+  }
+  50% {
+    transform: translateX(40px);
+    background: rgba(128, 0, 128, 0.3);
+  }
+  75% {
+    transform: translateX(-40px);
+    background: rgba(127, 186, 0, 0.3);
+  }
+  100% {
+    bottom: 100vh;
+    transform: translateX(-20px);
+    background: rgba(255, 105, 180, 0.3);
+  }
+}
+
+.chocolate-drops {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.chocolate-drop {
+  position: absolute;
+  background-color: var(--chocolate);
+  border-radius: 50%;
+  opacity: 0.2;
+}
+
+.candy {
+  position: absolute;
+  font-size: 30px;
+  animation: float 5s ease-in-out infinite;
+  z-index: -1;
+}
+
+.candy:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+.candy:nth-child(2) { top: 15%; left: 90%; animation-delay: 1s; }
+.candy:nth-child(3) { top: 80%; left: 10%; animation-delay: 2s; }
+.candy:nth-child(4) { top: 75%; left: 85%; animation-delay: 3s; }
+.candy:nth-child(5) { top: 50%; left: 95%; animation-delay: 4s; }
+
+#modelologin, #control_crear {
+  transition: transform 0.5s, opacity 0.5s;
+}
+
+#modelologin.hidden, #control_crear.hidden {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+
+.form-box {
+  position: relative;
+}
+</style>
+<body>
+
+  <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <div class="candy">🍬</div>
+  <div class="candy">🍭</div>
+  <div class="candy">🍫</div>
+  <div class="candy">🍪</div>
+  <div class="candy">🧁</div>
+  
+  <div class="container">
+    <div class="form-box">
+      <h2 id="form-title">Login</h2>
+      <form id="modelologin">
+        <input type="text" id="username" placeholder="Usuario" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">¡Entrar a la Fábrica!</button>
+        <p>¿No tienes boleto dorado? <a href="#" id="control_login">¡Regístrate!</a></p>
+      </form>
+      <form id="control_crear" class="hidden">
+        <input type="text" id="newUsername" placeholder="Nombre de aventurero" required>
+        <input type="password" id="newPassword" placeholder="Contraseña secreta" required>
+        <input type="email" id="email" placeholder="Correo Electrónico" required>
+        <button type="submit">¡Conseguir Boleto Dorado!</button>
+        <p>¿Ya tienes boleto dorado? <a href="#" id="toggleFormBack">¡Inicia tu aventura!</a></p>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+  function createChocolateDrops() {
+    const chocolateDrops = document.createElement('div');
+    chocolateDrops.className = 'chocolate-drops';
+    document.body.appendChild(chocolateDrops);
+    
+    for (let i = 0; i < 20; i++) {
+      const drop = document.createElement('div');
+      drop.className = 'chocolate-drop';
+
+      const size = Math.random() * 100 + 50;
+      drop.style.width = `${size}px`;
+      drop.style.height = `${size}px`;
+
+      drop.style.top = `${Math.random() * 100}%`;
+      drop.style.left = `${Math.random() * 100}%`;
+      
+      chocolateDrops.appendChild(drop);
+    }
+  }
+
+  window.addEventListener('load', createChocolateDrops);
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const modelologin = document.getElementById("modelologin");
+    const modeloregistro = document.getElementById("control_crear");
+    const toggleForm = document.getElementById("control_login");
+    const toggleFormBack = document.getElementById("toggleFormBack");
+    const formTitle = document.getElementById("form-title");
+
+    toggleForm.addEventListener("click", function (e) {
+      e.preventDefault();
+      modelologin.classList.add("hidden");
+      setTimeout(() => {
+        modelologin.style.display = "none";
+        modeloregistro.style.display = "block";
+        setTimeout(() => {
+          modeloregistro.classList.remove("hidden");
+        }, 10);
+      }, 300);
+      formTitle.textContent = "Registro";
+    });
+
+    if (toggleFormBack) {
+      toggleFormBack.addEventListener("click", function (e) {
+        e.preventDefault();
+        modeloregistro.classList.add("hidden");
+        setTimeout(() => {
+          modeloregistro.style.display = "none";
+          modelologin.style.display = "block";
+          setTimeout(() => {
+            modelologin.classList.remove("hidden");
+          }, 10);
+        }, 300);
+        formTitle.textContent = "Login";
+      });
+    }
+
+    const addButtonEffect = (button) => {
+      button.addEventListener('mousedown', () => {
+        button.classList.add('pressed');
+      });
+      
+      button.addEventListener('mouseup', () => {
+        button.classList.remove('pressed');
+      });
+    };
+
+    document.querySelectorAll('button').forEach(addButtonEffect);
+
+    modelologin.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const button = this.querySelector('button');
+      button.innerHTML = 'Procesando...';
+      button.style.background = 'linear-gradient(45deg, var(--verde-oompa), var(--azul-rio))';
+      
+      try {
+        const response = await fetch('/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          // Guardar token en localStorage
+          localStorage.setItem('token', data.token);
+          
+          // Animación de éxito
+          button.innerHTML = '¡Bienvenido a la Fábrica!';
+          button.style.background = 'linear-gradient(45deg, var(--verde-oompa), var(--verde-oompa))';
+          
+          // Redirigir después de una animación
+          setTimeout(() => {
+            window.location.href = '/pantalla';
+          }, 1000);
+        } else {
+          // Animación de error
+          button.innerHTML = '¡Oh no! Intenta de nuevo';
+          button.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+          setTimeout(() => {
+            button.innerHTML = '¡Entrar a la Fábrica!';
+            button.style.background = 'linear-gradient(45deg, var(--caramelo), var(--dorado))';
+          }, 2000);
+          
+          alert(data.message || 'Error al iniciar sesión');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        button.innerHTML = 'Error de conexión';
+        button.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+        setTimeout(() => {
+          button.innerHTML = '¡Entrar a la Fábrica!';
+          button.style.background = 'linear-gradient(45deg, var(--caramelo), var(--dorado))';
+        }, 2000);
+        
+        alert('Error al conectar con el servidor');
+      }
+    });
+    
+    // Manejar envío del formulario de registro
+    modeloregistro.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("newPassword").value;
+      const email = document.getElementById("email").value;
+      
+      // Animación de envío
+      const button = this.querySelector('button');
+      button.innerHTML = 'Creando boleto...';
+      button.style.background = 'linear-gradient(45deg, var(--verde-oompa), var(--azul-rio))';
+      
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, email })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          // Animación de éxito
+          button.innerHTML = '¡Boleto Dorado Creado!';
+          button.style.background = 'linear-gradient(45deg, var(--verde-oompa), var(--verde-oompa))';
+          
+          // Cambiar al formulario de login después de un delay
+          setTimeout(() => {
+            modeloregistro.classList.add("hidden");
+            setTimeout(() => {
+              modeloregistro.style.display = "none";
+              modelologin.style.display = "block";
+              setTimeout(() => {
+                modelologin.classList.remove("hidden");
+                formTitle.textContent = "Login";
+                button.innerHTML = '¡Conseguir Boleto Dorado!';
+                button.style.background = 'linear-gradient(45deg, var(--caramelo), var(--dorado))';
+              }, 10);
+            }, 300);
+          }, 1500);
+        } else {
+          // Animación de error
+          button.innerHTML = 'Error al crear boleto';
+          button.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+          setTimeout(() => {
+            button.innerHTML = '¡Conseguir Boleto Dorado!';
+            button.style.background = 'linear-gradient(45deg, var(--caramelo), var(--dorado))';
+          }, 2000);
+          
+          alert(data.message || 'Error al registrar usuario');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        button.innerHTML = 'Error de conexión';
+        button.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+        setTimeout(() => {
+          button.innerHTML = '¡Conseguir Boleto Dorado!';
+          button.style.background = 'linear-gradient(45deg, var(--caramelo), var(--dorado))';
+        }, 2000);
+        
+        alert('Error al conectar con el servidor');
+      }
+    });
+  });
+  </script>
+  <script>
+    // Bloquear clic derecho
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  
+    // Bloquear combinaciones de teclas comunes
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.key === 'F12' || // F12 para abrir DevTools
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || // Ctrl+Shift+I/J/C
+        (e.ctrlKey && e.key === 'U') // Ctrl+U para ver código fuente
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  
+    // Intento de detección y bloqueo de consola
+    (function () {
+      const devtools = {
+        open: false,
+        orientation: null
+      };
+  
+      const threshold = 160;
+  
+      const emitEvent = function (state) {
+        window.dispatchEvent(new CustomEvent('devtoolschange', {
+          detail: {
+            open: state
+          }
+        }));
+      };
+  
+      setInterval(function () {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        const orientation = widthThreshold ? 'vertical' : 'horizontal';
+  
+        if (
+          !(heightThreshold && widthThreshold) &&
+          ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) ||
+           widthThreshold || heightThreshold)
+        ) {
+          if (!devtools.open || devtools.orientation !== orientation) {
+            emitEvent(true);
+          }
+          devtools.open = true;
+          devtools.orientation = orientation;
+  
+          // Acción opcional: redirigir o cerrar página
+          document.body.innerHTML = '<h1 style="text-align:center;">No está permitido inspeccionar esta página.</h1>';
+        } else {
+          if (devtools.open) {
+            emitEvent(false);
+          }
+          devtools.open = false;
+          devtools.orientation = null;
+        }
+      }, 500);
+    })();
+  </script>
+  
+
+</body>
+</html>

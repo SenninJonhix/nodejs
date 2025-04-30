@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GALERIA</title>
+  <link rel="stylesheet" href="../galeria/galeria.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>GALERIA</h1>
+      <div class="user-info">
+        <div class="user-info">
+          <a href="../usuario/usuario.html"><span id="username">Usuario</span></a>
+          <a href="../galeria/galeria.html"><span id="username">Galeria</span></a>
+          <a href="../conversor/conversor.html"><span id="username">Conversor</span></a>
+        </div>
+        <button id="logout" title="Cerrar sesión"><i class="fas fa-sign-out-alt"></i></button>
+        <button id="back-button" title="Volver al panel"><i class="fas fa-backward"></i></button>
+    </header>
+    <main>
+        <div class="gallery-container">
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="./fotos/1.jpg" alt="Río de Chocolate">
+                    <div class="caption">
+                        <h3>GATO SAINZ </h3>
+                        <p>Nuestro famoso gato, el cual es comestible.</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <img src="./fotos/2.jpg" alt="Sala de Invenciones">
+                    <div class="caption">
+                        <h3>GATO SAINZ</h3>
+                        <p>Donde nacen nuestras ideas más dulces y extraordinarias.</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <img src="./fotos/3.jpg" alt="Oompa-Loompas Trabajando">
+                    <div class="caption">
+                        <h3>GATO SAINZ</h3>
+                        <p>Nuestros talentosos trabajadores creando magia dulce.</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <img src="./fotos/3.jpg" alt="Ascensor de Cristal">
+                    <div class="caption">
+                        <h3>GATO SAINZ</h3>
+                        <p>Viaja a cualquier rincón de la fábrica con nuestro ascensor mágico.</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <img src="./fotos/2.jpg" alt="Jardín de Caramelo">
+                    <div class="caption">
+                        <h3>GATO SAINZ</h3>
+                        <p>Un lugar donde todo es comestible, hasta el césped.</p>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <img src="./fotos/1.jpg" alt="Golosinas Eternas">
+                    <div class="caption">
+                        <h3>GATO SAINZ</h3>
+                        <p>Dulces que nunca se acaban, ¡magia en cada mordisco!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+      <p>&copy; 2025 Mi Aplicación. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+
+  <script>
+
+document.getElementById('back-button').addEventListener('click', () => {
+        window.location.href = '../gato/pantalla.html';
+      });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Código existente
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        document.getElementById('username').textContent = payload.username || 'Usuario';
+      } catch (e) {
+        console.error('Error al decodificar token:', e);
+      }
+
+      document.getElementById('logout').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+      });
+
+      const urlInput = document.getElementById('url-input');
+      const goButton = document.getElementById('go-button');
+      const webIframe = document.getElementById('web-iframe');
+      const webPlaceholder = document.querySelector('.web-placeholder');
+
+      function loadUrl(url) {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'http://' + url;
+          urlInput.value = url;
+        }
+        
+        try {
+          webIframe.src = url;
+          webIframe.style.display = 'block';
+          webPlaceholder.style.display = 'none';
+        } catch (e) {
+          console.error('Error al cargar URL:', e);
+          webIframe.style.display = 'none';
+          webPlaceholder.style.display = 'flex';
+        }
+      }
+
+      goButton.addEventListener('click', function() {
+        loadUrl(urlInput.value.trim());
+      });
+
+      loadUrl('192.168.1.138:5000');
+
+      const controlKeys = document.querySelectorAll('.control-key');
+      controlKeys.forEach(key => {
+        key.addEventListener('click', function() {
+          const keyValue = this.getAttribute('data-key');
+          console.log('Tecla presionada:', keyValue);
+
+          this.classList.add('pressed');
+          setTimeout(() => {
+            this.classList.remove('pressed');
+          }, 200);
+        });
+      });
+
+      try {
+        const modeButtons = document.querySelectorAll('[data-mode]');
+        modeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            console.log('Modo seleccionado:', this.getAttribute('data-mode'));
+          });
+        });
+      } catch (e) {
+        console.error('Error con modeButtons:', e);
+      }
+
+      // Nuevo código para la conversión XML a JSON
+      const xmlFileInput = document.getElementById('xml-file');
+      const fileNameDisplay = document.getElementById('file-name');
+      const convertButton = document.getElementById('convert-button');
+      const downloadButton = document.getElementById('download-button');
+      const downloadContainer = document.querySelector('.download-container');
+      const xmlContentDisplay = document.getElementById('xml-content');
+      const jsonContentDisplay = document.getElementById('json-content');
+      
+      let currentXmlContent = '';
+      let currentJsonContent = '';
+      let currentFileName = '';
+      
+      xmlFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) {
+          return;
+        }
+        
+        currentFileName = file.name;
+        fileNameDisplay.textContent = currentFileName;
+        convertButton.disabled = false;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentXmlContent = e.target.result;
+          xmlContentDisplay.textContent = currentXmlContent;
+          jsonContentDisplay.textContent = 'El resultado JSON aparecerá aquí';
+          downloadContainer.style.display = 'none';
+        };
+        reader.readAsText(file);
+      });
+      
+      convertButton.addEventListener('click', function() {
+        try {
+          // Convertir XML a JSON usando la librería x2js
+          const x2js = new X2JS();
+          const jsonObj = x2js.xml_str2json(currentXmlContent);
+          currentJsonContent = JSON.stringify(jsonObj, null, 2);
+          
+          jsonContentDisplay.textContent = currentJsonContent;
+          downloadContainer.style.display = 'block';
+        } catch (error) {
+          jsonContentDisplay.textContent = 'Error al convertir: ' + error.message;
+          console.error('Error al convertir XML a JSON:', error);
+        }
+      });
+      
+      downloadButton.addEventListener('click', function() {
+        if (!currentJsonContent) return;
+        
+        const blob = new Blob([currentJsonContent], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = currentFileName.replace('.xml', '.json');
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(function() {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 0);
+      });
+    });
+  </script>
+
+  <script>
+    // Bloquear clic derecho
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  
+    // Bloquear combinaciones de teclas comunes
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.key === 'F12' || // F12 para abrir DevTools
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || // Ctrl+Shift+I/J/C
+        (e.ctrlKey && e.key === 'U') // Ctrl+U para ver código fuente
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  
+    // Intento de detección y bloqueo de consola
+    (function () {
+      const devtools = {
+        open: false,
+        orientation: null
+      };
+  
+      const threshold = 160;
+  
+      const emitEvent = function (state) {
+        window.dispatchEvent(new CustomEvent('devtoolschange', {
+          detail: {
+            open: state
+          }
+        }));
+      };
+  
+      setInterval(function () {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        const orientation = widthThreshold ? 'vertical' : 'horizontal';
+  
+        if (
+          !(heightThreshold && widthThreshold) &&
+          ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) ||
+           widthThreshold || heightThreshold)
+        ) {
+          if (!devtools.open || devtools.orientation !== orientation) {
+            emitEvent(true);
+          }
+          devtools.open = true;
+          devtools.orientation = orientation;
+  
+          // Acción opcional: redirigir o cerrar página
+          document.body.innerHTML = '<h1 style="text-align:center;">No está permitido inspeccionar esta página.</h1>';
+        } else {
+          if (devtools.open) {
+            emitEvent(false);
+          }
+          devtools.open = false;
+          devtools.orientation = null;
+        }
+      }, 500);
+    })();
+  </script>
+</body>
+</html>

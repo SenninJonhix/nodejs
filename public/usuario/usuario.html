@@ -1,0 +1,208 @@
+<!-- public/usuario.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfil de Usuario</title>
+  <link rel="stylesheet" href="./usuario.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="candy-wrapper">
+      <header>
+        <h1>USUARIO</h1>
+        <div class="user-info">
+          <div class="user-info">
+            <a href="../usuario/usuario.html"><span id="username">Usuario</span></a>
+          </div>
+          <button id="back-button" title="Volver al panel"><i class="fas fa-backward"></i></button>
+      </header>
+
+      <main>
+        <section class="user-profile">
+          <div class="profile-header">
+            <div class="profile-image">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <h2>Perfil de <span id="profile-name">Oompa-Loompa</span></h2>
+          </div>
+
+          <form id="user-form" class="chocolate-form">
+            <div class="form-group">
+              <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico:</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="password"><i class="fas fa-lock"></i> Nueva Contraseña:</label>
+              <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar">
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-password"><i class="fas fa-lock"></i> Confirmar Contraseña:</label>
+              <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirma tu nueva contraseña">
+            </div>
+
+            <div class="form-buttons">
+              <button type="submit" class="candy-button"><i class="fas fa-save"></i> Guardar Cambios</button>
+              <button type="reset" class="candy-button secondary"><i class="fas fa-broom"></i> Limpiar</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <footer>
+        <p>&copy; 2025 Fábrica de Chocolate.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/';
+        return;
+      }
+
+      const apiBaseUrl = '/api/users';
+      let userId = '';
+
+      async function fetchWithAuth(url, options = {}) {
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          ...options.headers
+        };
+
+        const response = await fetch(url, { ...options, headers });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Error en la petición');
+        }
+        return response.json();
+      }
+
+      async function cargarDatosUsuario() {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          userId = payload.id;
+          const username = payload.username;
+
+          document.getElementById('username').textContent = username;
+          document.getElementById('profile-name').textContent = username;
+
+          const userData = await fetchWithAuth(`${apiBaseUrl}/${userId}`);
+          document.getElementById('email').value = userData.email;
+        } catch (e) {
+          console.error('Error al cargar datos:', e);
+          alert('No se pudieron cargar los datos.');
+        }
+      }
+
+      async function actualizarPerfil(formData) {
+        try {
+          const updated = await fetchWithAuth(`${apiBaseUrl}/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(formData)
+          });
+          alert('¡Perfil actualizado correctamente!');
+        } catch (e) {
+          console.error('Error al actualizar:', e);
+          alert(e.message);
+        }
+      }
+
+      document.getElementById('back-button').addEventListener('click', () => {
+        window.location.href = '../gato/pantalla.html';
+      });
+
+      document.getElementById('user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (password && password !== confirmPassword) {
+          return alert('¡Las contraseñas no coinciden!');
+        }
+
+        const data = { email };
+        if (password) data.password = password;
+
+        await actualizarPerfil(data);
+      });
+
+      cargarDatosUsuario();
+    });
+  </script>
+  <script>
+    // Bloquear clic derecho
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  
+    // Bloquear combinaciones de teclas comunes
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.key === 'F12' || // F12 para abrir DevTools
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || // Ctrl+Shift+I/J/C
+        (e.ctrlKey && e.key === 'U') // Ctrl+U para ver código fuente
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  
+    // Intento de detección y bloqueo de consola
+    (function () {
+      const devtools = {
+        open: false,
+        orientation: null
+      };
+  
+      const threshold = 160;
+  
+      const emitEvent = function (state) {
+        window.dispatchEvent(new CustomEvent('devtoolschange', {
+          detail: {
+            open: state
+          }
+        }));
+      };
+  
+      setInterval(function () {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        const orientation = widthThreshold ? 'vertical' : 'horizontal';
+  
+        if (
+          !(heightThreshold && widthThreshold) &&
+          ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) ||
+           widthThreshold || heightThreshold)
+        ) {
+          if (!devtools.open || devtools.orientation !== orientation) {
+            emitEvent(true);
+          }
+          devtools.open = true;
+          devtools.orientation = orientation;
+  
+          // Acción opcional: redirigir o cerrar página
+          document.body.innerHTML = '<h1 style="text-align:center;">No está permitido inspeccionar esta página.</h1>';
+        } else {
+          if (devtools.open) {
+            emitEvent(false);
+          }
+          devtools.open = false;
+          devtools.orientation = null;
+        }
+      }, 500);
+    })();
+  </script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Control</title>
+  <link rel="stylesheet" href="pantalla.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>HOME</h1>
+      <div class="user-info">
+        <a href="../usuario/usuario.html"><span id="username">Usuario</span></a>
+        <a href="../galeria/galeria.html"><span>Galería</span></a>
+        <a href="../conversor/conversor.html"><span>Conversor</span></a>
+      </div>
+      <button id="logout" title="Cerrar sesión"><i class="fas fa-sign-out-alt"></i></button>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Vista Web 1 -->
+      <section class="web-view-section">
+        <h2>Vista Web 1</h2>
+        <div class="web-view">
+          <div class="browser-bar">
+            <div class="browser-controls">
+              <button class="browser-button"><i class="fas fa-arrow-left"></i></button>
+              <button class="browser-button"><i class="fas fa-arrow-right"></i></button>
+              <button class="browser-button"><i class="fas fa-redo"></i></button>
+            </div>
+            <input type="text" id="url-input-1" value="http://192.168.1.138:5000" />
+            <button class="go-button" data-target="1"><i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="web-content">
+            <iframe id="web-iframe-1" src="about:blank" sandbox="allow-same-origin allow-scripts"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista Web 2 -->
+      <section class="web-view-section">
+        <h2>Vista Web 2</h2>
+        <div class="web-view">
+          <div class="browser-bar">
+            <div class="browser-controls">
+              <button class="browser-button"><i class="fas fa-arrow-left"></i></button>
+              <button class="browser-button"><i class="fas fa-arrow-right"></i></button>
+              <button class="browser-button"><i class="fas fa-redo"></i></button>
+            </div>
+            <input type="text" id="url-input-2" value="http://192.168.1.138:8080" />
+            <button class="go-button" data-target="2"><i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="web-content">
+            <iframe id="web-iframe-2" src="about:blank" sandbox="allow-same-origin allow-scripts"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="temperature-section">
+        <h2>Temperatura Actual: <span id="current-temperature">--</span></h2>
+        <div class="temperature-info">
+          <div class="temp-stat min">
+            <div>Mínima</div><span id="min-temp">--</span>
+          </div>
+          <div class="temp-stat avg">
+            <div>Promedio</div><span id="avg-temp">--</span>
+          </div>
+          <div class="temp-stat max">
+            <div>Máxima</div><span id="max-temp">--</span>
+          </div>
+        </div>
+        <canvas id="temperature-chart" width="400" height="150"></canvas>
+      </section>
+  
+    </main>
+   
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Mi Aplicación. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+
+  <!-- Script Principal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) return window.location.href = '/';
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        document.getElementById('username').textContent = payload.username || 'Usuario';
+      } catch (e) {
+        localStorage.removeItem('token');
+        return window.location.href = '/';
+      }
+
+      document.getElementById('logout').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+      });
+
+      function setupIframe(target) {
+        const input = document.getElementById(`url-input-${target}`);
+        const button = document.querySelector(`.go-button[data-target="${target}"]`);
+        const iframe = document.getElementById(`web-iframe-${target}`);
+        const loadUrl = () => {
+          let url = input.value.trim();
+          if (!url.startsWith("http")) url = "http://" + url;
+          iframe.src = url;
+        };
+        button.addEventListener("click", loadUrl);
+        loadUrl();
+      }
+
+      setupIframe(1);
+      setupIframe(2);
+
+      let chart;
+      function fetchTemperaturas() {
+        fetch('/ultimas')
+          .then(res => res.ok ? res.json() : Promise.reject(res.status))
+          .then(data => {
+            if (!data?.length) return;
+
+            const labels = data.map(d => new Date(d.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            const tempData = data.map(d => d.temperatura);
+            const current = tempData.at(-1);
+
+            document.getElementById('current-temperature').textContent = `${current.toFixed(1)} °C`;
+            document.getElementById('min-temp').textContent = `${Math.min(...tempData).toFixed(1)} °C`;
+            document.getElementById('avg-temp').textContent = `${(tempData.reduce((a, b) => a + b) / tempData.length).toFixed(1)} °C`;
+            document.getElementById('max-temp').textContent = `${Math.max(...tempData).toFixed(1)} °C`;
+
+            if (!chart) {
+              chart = new Chart(document.getElementById('temperature-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                  labels,
+                  datasets: [{
+                    label: 'Temperatura (°C)',
+                    data: tempData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    tooltip: {
+                      callbacks: {
+                        title: ctx => data[ctx[0].dataIndex].fechaFormateada
+                      }
+                    }
+                  },
+                  scales: {
+                    y: {
+                      suggestedMin: Math.floor(Math.min(...tempData)) - 1,
+                      suggestedMax: Math.ceil(Math.max(...tempData)) + 1
+                    }
+                  }
+                }
+              });
+            } else {
+              chart.data.labels = labels;
+              chart.data.datasets[0].data = tempData;
+              chart.update();
+            }
+          })
+          .catch(err => {
+            console.error('Error al obtener temperaturas:', err);
+            document.getElementById('current-temperature').textContent = 'Error';
+          });
+      }
+
+      fetchTemperaturas();
+      setInterval(fetchTemperaturas, 30000);
+    });
+  </script>
+</body>
+</html>
